@@ -1,0 +1,98 @@
+<div class="container">
+  <div class="grid-container">
+    <div class="sidebar">
+      <h2>Your Documents</h2>
+      
+      <mat-nav-list>
+        <a 
+          mat-list-item 
+          *ngFor="let doc of documents()" 
+          (click)="selectDocument(doc)"
+          [class.active]="currentDocument()?.id === doc.id">
+          <mat-icon matListIcon>description</mat-icon>
+          <span matLine>{{ doc.fileName }}</span>
+          <span matLine class="doc-date">{{ doc.uploadDate | date:'medium' }}</span>
+        </a>
+      </mat-nav-list>
+      
+      <button 
+        mat-raised-button 
+        color="primary" 
+        routerLink="/document-analysis/upload"
+        class="upload-btn">
+        <mat-icon>cloud_upload</mat-icon>
+        Upload New Document
+      </button>
+    </div>
+    
+    <div class="content">
+      <div *ngIf="currentDocument(); else noDocument">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>{{ currentDocument()?.fileName }}</mat-card-title>
+            <mat-card-subtitle>
+              Uploaded on {{ currentDocument()?.uploadDate | date:'full' }}
+            </mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <div class="document-actions">
+              <button 
+                mat-raised-button 
+                color="primary"
+                (click)="analyzeDocument(currentDocument()!.id)">
+                Analyze Document
+              </button>
+            </div>
+            
+            <div *ngIf="hasAnalysis()" class="analysis-results">
+              <h3>Analysis Results</h3>
+              
+              <!-- Use ngIf for each tab content instead of mat-tab-group -->
+              <div class="tab-container">
+                <div class="tab-content" *ngIf="currentDocument()?.analysis?.extractedText">
+                  <h4>Text Content</h4>
+                  <div class="text-content">
+                    <pre>{{ currentDocument()?.analysis?.extractedText }}</pre>
+                  </div>
+                </div>
+                
+                <div class="tab-content" *ngIf="currentDocument()?.analysis?.entities?.length">
+                  <h4>Entities</h4>
+                  <mat-list>
+                    <mat-list-item *ngFor="let entity of currentDocument()?.analysis?.entities">
+                      <span matLine>{{ entity.type }}: {{ entity.value }}</span>
+                      <span matLine>Count: {{ entity.count }}</span>
+                    </mat-list-item>
+                  </mat-list>
+                </div>
+                
+                <div class="tab-content" *ngIf="currentDocument()?.analysis?.summary">
+                  <h4>Summary</h4>
+                  <p>{{ currentDocument()?.analysis?.summary }}</p>
+                </div>
+                
+                <div class="tab-content" *ngIf="currentDocument()?.analysis?.metadata">
+                  <h4>Metadata</h4>
+                  <pre>{{ currentDocument()?.analysis?.metadata | json }}</pre>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      
+      <ng-template #noDocument>
+        <mat-card>
+          <mat-card-content>
+            <div class="no-document">
+              <mat-icon>description</mat-icon>
+              <h3>No document selected</h3>
+              <p>Select a document from the list or upload a new one to get started</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </ng-template>
+    </div>
+  </div>
+</div>

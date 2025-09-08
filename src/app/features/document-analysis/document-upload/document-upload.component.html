@@ -1,0 +1,48 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Upload Document</mat-card-title>
+      <mat-card-subtitle>Supported formats: PDF, JPEG, PNG, TXT</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="upload-area" (click)="triggerFileInput()">
+        <input 
+          #fileInput
+          type="file" 
+          (change)="onFileSelected($event)"
+          accept=".pdf,.jpg,.jpeg,.png,.txt"
+          hidden>
+        
+        <mat-icon class="upload-icon">cloud_upload</mat-icon>
+        
+        <div *ngIf="!selectedFile; else fileSelected">
+          <p>Click to select a file or drag and drop</p>
+          <p class="file-types">PDF, JPG, PNG, TXT</p>
+        </div>
+        
+        <ng-template #fileSelected>
+          <p>Selected file: {{ selectedFile?.name }}</p>
+          <p class="file-size" *ngIf="selectedFile">{{ formatFileSize(selectedFile.size) }}</p>
+        </ng-template>
+      </div>
+    </mat-card-content>
+    
+    <mat-card-actions>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="uploadDocument()" 
+        [disabled]="!selectedFile || isLoading">
+        Upload Document
+      </button>
+      
+      <button 
+        mat-button 
+        (click)="triggerFileInput()"
+        [disabled]="isLoading">
+        Select Different File
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
