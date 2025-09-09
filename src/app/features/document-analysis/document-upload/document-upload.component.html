@@ -24,7 +24,17 @@
         <ng-template #fileSelected>
           <p>Selected file: {{ selectedFile?.name }}</p>
           <p class="file-size" *ngIf="selectedFile">{{ formatFileSize(selectedFile.size) }}</p>
+          <p class="file-type" *ngIf="selectedFile">Type: {{ selectedFile.type }}</p>
         </ng-template>
+      </div>
+
+      <!-- Debug info (can be removed in production) -->
+      <div class="debug-info" *ngIf="selectedFile">
+        <p><strong>Debug Info:</strong></p>
+        <p>File name: {{ selectedFile.name }}</p>
+        <p>File size: {{ selectedFile.size }} bytes</p>
+        <p>File type: {{ selectedFile.type }}</p>
+        <p>Last modified: {{ selectedFile.lastModified | date:'medium' }}</p>
       </div>
     </mat-card-content>
     
@@ -33,15 +43,26 @@
         mat-raised-button 
         color="primary" 
         (click)="uploadDocument()" 
-        [disabled]="!selectedFile || isLoading">
+        [disabled]="!selectedFile || isLoading()">
+        <mat-icon>cloud_upload</mat-icon>
         Upload Document
       </button>
       
       <button 
         mat-button 
         (click)="triggerFileInput()"
-        [disabled]="isLoading">
+        [disabled]="isLoading()">
+        <mat-icon>folder_open</mat-icon>
         Select Different File
+      </button>
+
+      <button 
+        mat-button 
+        color="warn" 
+        (click)="clearFileSelection()"
+        [disabled]="!selectedFile">
+        <mat-icon>cancel</mat-icon>
+        Clear Selection
       </button>
     </mat-card-actions>
   </mat-card>

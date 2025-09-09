@@ -1,4 +1,4 @@
-import { Component, OnInit, effect } from '@angular/core';
+import { Component, OnInit, computed } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -12,7 +12,10 @@ import { LoadingService } from '../../services/loading.service';
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   hidePassword = true;
-  isLoading = false;
+  
+  // Use computed signal for loading state
+  isLoading = computed(() => this.loadingService.isLoading());
+  
   errorMessage = '';
 
   constructor(
@@ -24,11 +27,6 @@ export class LoginComponent implements OnInit {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]]
-    });
-
-    // Use effect to react to loading state changes
-    effect(() => {
-      this.isLoading = this.loadingService.isLoading();
     });
   }
 

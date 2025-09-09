@@ -28,33 +28,40 @@ export interface Entity {
   providedIn: 'root'
 })
 export class DocumentService {
-  private documents = signal<Document[]>([]);
-  private currentDocument = signal<Document | null>(null);
+  private _documents = signal<Document[]>([]);
+  private _currentDocument = signal<Document | null>(null);
+
+  // Expose signals as read-only
+  documents = this._documents.asReadonly();
+  currentDocument = this._currentDocument.asReadonly();
 
   constructor(private http: HttpClient) {
     this.loadDocuments();
   }
 
-  getDocuments() {
-    return this.documents.asReadonly();
-  }
-
-  getCurrentDocument() {
-    return this.currentDocument.asReadonly();
-  }
-
   setCurrentDocument(document: Document) {
-    this.currentDocument.set(document);
+    this._currentDocument.set(document);
   }
 
   uploadDocument(file: File): Observable<Document> {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('fileName', file.name);
+    formData.append('fileType', file.type);
+    formData.append('fileSize', file.size.toString());
+
+    console.log('Uploading file to server:', file.name);
 
     return this.http.post<Document>('/api/documents/upload', formData).pipe(
-      tap(document => {
-        this.documents.update(docs => [document, ...docs]);
-        this.currentDocument.set(document);
+      tap({
+        next: (document) => {
+          console.log('Upload successful, updating documents list');
+          this._documents.update(docs => [document, ...docs]);
+          this._currentDocument.set(document);
+        },
+        error: (error) => {
+          console.error('Upload error:', error);
+        }
       })
     );
   }
@@ -62,11 +69,14 @@ export class DocumentService {
   analyzeDocument(documentId: string): Observable<DocumentAnalysis> {
     return this.http.post<DocumentAnalysis>(`/api/documents/${documentId}/analyze`, {}).pipe(
       tap(analysis => {
-        const updatedDoc = { ...this.currentDocument()!, analysis };
-        this.currentDocument.set(updatedDoc);
+        const currentDoc = this._currentDocument();
+        if (currentDoc && currentDoc.id === documentId) {
+          const updatedDoc = { ...currentDoc, analysis };
+          this._currentDocument.set(updatedDoc);
+        }
         
-        this.documents.update(docs => 
-          docs.map(doc => doc.id === documentId ? updatedDoc : doc)
+        this._documents.update(docs => 
+          docs.map(doc => doc.id === documentId ? { ...doc, analysis } : doc)
         );
       })
     );
@@ -74,7 +84,10 @@ export class DocumentService {
 
   private loadDocuments(): void {
     this.http.get<Document[]>('/api/documents').subscribe({
-      next: documents => this.documents.set(documents),
+      next: documents => {
+        console.log('Loaded documents:', documents.length);
+        this._documents.set(documents);
+      },
       error: error => console.error('Failed to load documents', error)
     });
   }

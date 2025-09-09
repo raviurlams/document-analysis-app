@@ -24,8 +24,12 @@ export class AuthService {
   private readonly USER_DATA_KEY = 'user_data';
   
   // Use signals for state management
-  isAuthenticated = signal<boolean>(false);
-  currentUser = signal<any>(null);
+  private _isAuthenticated = signal<boolean>(false);
+  private _currentUser = signal<any>(null);
+
+  // Expose signals as read-only
+  isAuthenticated = this._isAuthenticated.asReadonly();
+  currentUser = this._currentUser.asReadonly();
 
   constructor(private http: HttpClient) {
     this.checkAuthentication();
@@ -42,8 +46,8 @@ export class AuthService {
   logout(): void {
     this.deleteCookie(this.AUTH_TOKEN_KEY);
     localStorage.removeItem(this.USER_DATA_KEY);
-    this.isAuthenticated.set(false);
-    this.currentUser.set(null);
+    this._isAuthenticated.set(false);
+    this._currentUser.set(null);
   }
 
   getToken(): string | null {
@@ -52,7 +56,7 @@ export class AuthService {
 
   // Helper method to check if user is authenticated (for guards)
   isAuthenticatedValue(): boolean {
-    return this.isAuthenticated();
+    return this._isAuthenticated();
   }
 
   private checkAuthentication(): void {
@@ -60,12 +64,13 @@ export class AuthService {
     const userData = localStorage.getItem(this.USER_DATA_KEY);
     
     if (token && userData) {
-      this.isAuthenticated.set(true);
-      this.currentUser.set(JSON.parse(userData));
+      this._isAuthenticated.set(true);
+      this._currentUser.set(JSON.parse(userData));
     }
   }
 
   private setAuthData(authResponse: AuthResponse): void {
+    debugger
     // Set token in cookie with expiration
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + 7); // 7 days expiration
@@ -79,8 +84,8 @@ export class AuthService {
     // Store user data in local storage
     localStorage.setItem(this.USER_DATA_KEY, JSON.stringify(authResponse.user));
     
-    this.isAuthenticated.set(true);
-    this.currentUser.set(authResponse.user);
+    this._isAuthenticated.set(true);
+    this._currentUser.set(authResponse.user);
   }
 
   // Helper methods for cookie handling

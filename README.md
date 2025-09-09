@@ -20,6 +20,13 @@ rm -rf node_modules package-lock.json
 npm cache clean --force
 npm i --save
 
+# Run APP
+ng s
+
+# UserName/Password
+- admin@example.com (admin) user@example.com(User)
+- Password : Password123!
+
 # Run All Tests
 npm test
 

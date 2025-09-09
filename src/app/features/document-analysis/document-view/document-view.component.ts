@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed } from '@angular/core';
 import { DocumentService } from '../../../services/document.service';
 
 @Component({
@@ -7,8 +7,9 @@ import { DocumentService } from '../../../services/document.service';
   styleUrls: ['./document-view.component.scss']
 })
 export class DocumentViewComponent implements OnInit {
-  documents = this.documentService.getDocuments();
-  currentDocument = this.documentService.getCurrentDocument();
+  // Use computed signals to access the service signals
+  documents = computed(() => this.documentService.documents());
+  currentDocument = computed(() => this.documentService.currentDocument());
 
   constructor(private documentService: DocumentService) {}
 
@@ -26,11 +27,13 @@ export class DocumentViewComponent implements OnInit {
   }
 
   selectDocument(document: any): void {
+    debugger
     this.documentService.setCurrentDocument(document);
   }
 
   // Helper method to safely access analysis data
   hasAnalysis(): boolean {
-    return !!this.currentDocument()?.analysis;
+    const currentDoc = this.currentDocument();
+    return !!currentDoc?.analysis;
   }
 }

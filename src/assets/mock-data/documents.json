@@ -1,0 +1,55 @@
+{
+  "documents": [
+    {
+      "id": "1",
+      "fileName": "Ranasthalam Sale Agreement.pdf",
+      "uploadDate": "2024-07-22T00:00:00.000Z",
+      "fileSize": 24576,
+      "fileType": "pdf",
+      "content": "Sample document content...",
+      "analysis": {
+        "totalPages": 3,
+        "extractedText": "Wwww.www \nXXY \nww.xAWWBKUA \nSE, \nTEN \nRUPEE$ \n,10 \nHS.10\nINDIA \nNDIANON \nUD \nA \nww.awwwwwAw \nAwNAxAWWWA \nAweW \nAND12A \nPRADE \n93AA 01 2596 \nSi. No36Y..Rs.9l..Date.22.7-2o4 \nSold.BeliUade.. \nVeAala Se Adha Jaya^a,\nMLakkhnd \nFor Whom \n. \nLAKSHMI\nicensed Stamp V 3n \nNo. \n01-12-018/2t \nLinceise No:01-12-002/2u14 \nJ.R. Puram, Srikakulam Dt. \no \n1s d».5,80,000/-se .aoe aoeáwsso oggos esgao do \nKcb53vw ,øgoy:d.30,00,000/. \nI.3.09-08-2021. \nowosos) Td:1)3ssbvo &p,óaneo ocseo,8.e6.yöo .S.e \nsoa d» boo6áwraavcds mô dbárdoc so da,3)Essbvo \nawoawydod:1)rpe) owg,dDoTáDodeo, ®iðvyueo \neo,5DOKeD \nsds sglegrQ 3o.373y 47493i),\n1. 0lo \n8/202 \n2.",
+        "metadata": {
+          "title": "Ranasthalam Sale Agreement",
+          "author": "Unknown",
+          "created": "2024-07-22",
+          "pages": 3,
+          "language": "en"
+        },
+        "entities": [
+          { "type": "PERSON", "value": "LAKSHMI", "count": 1 },
+          { "type": "LOCATION", "value": "J.R. Puram, Srikakulam Dt.", "count": 1 },
+          { "type": "DATE", "value": "2021-08-09", "count": 1 },
+          { "type": "MONEY", "value": "5,80,000", "count": 1 },
+          { "type": "MONEY", "value": "30,00,000", "count": 1 }
+        ],
+        "summary": "Property sale agreement document from Ranasthalam area involving financial transactions."
+      }
+    },
+    {
+      "id": "2",
+      "fileName": "Sample Contract.docx",
+      "uploadDate": "2024-08-15T00:00:00.000Z", 
+      "fileSize": 15360,
+      "fileType": "docx",
+      "content": "Contract content goes here...",
+      "analysis": {
+        "totalPages": 5,
+        "extractedText": "This is a sample contract document with various clauses and terms.",
+        "metadata": {
+          "title": "Sample Contract",
+          "author": "Legal Department",
+          "created": "2024-08-15",
+          "pages": 5,
+          "language": "en"
+        },
+        "entities": [
+          { "type": "ORGANIZATION", "value": "Legal Department", "count": 1 },
+          { "type": "DATE", "value": "2024-08-15", "count": 1 }
+        ],
+        "summary": "Standard contract document with legal terms and conditions."
+      }
+    }
+  ]
+}

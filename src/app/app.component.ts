@@ -1,7 +1,8 @@
-import { Component, OnInit, ViewChild, signal, effect } from '@angular/core';
+import { Component, OnInit, ViewChild, signal, computed } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { AuthService } from './services/auth.service';
 import { LoadingService } from './services/loading.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -10,41 +11,28 @@ import { LoadingService } from './services/loading.service';
 })
 export class AppComponent implements OnInit {
   title = 'Document Analysis App';
-  isAuthenticated = signal<boolean>(false);
-  isLoading = signal<boolean>(false);
-  currentUser = signal<any>(null);
+  
+  // Use computed signals to derive values from services
+  isAuthenticated = computed(() => this.authService.isAuthenticated());
+  isLoading = computed(() => this.loadingService.isLoading());
+  currentUser = computed(() => this.authService.currentUser());
 
   @ViewChild('sidenav') sidenav!: MatSidenav;
 
   constructor(
     private authService: AuthService,
-    private loadingService: LoadingService
-  ) {
-    // Use effects to react to signal changes
-    effect(() => {
-      this.isAuthenticated.set(this.authService.isAuthenticated());
-    });
-
-    effect(() => {
-      this.currentUser.set(this.authService.currentUser());
-    });
-
-    effect(() => {
-      this.isLoading.set(this.loadingService.isLoading());
-    });
-  }
+    private loadingService: LoadingService,
+      private router: Router
+  ) {}
 
   ngOnInit(): void {
-    // Initial values
-    this.isAuthenticated.set(this.authService.isAuthenticated());
-    this.currentUser.set(this.authService.currentUser());
-    this.isLoading.set(this.loadingService.isLoading());
   }
 
   logout(): void {
     this.authService.logout();
     if (this.sidenav) {
       this.sidenav.close();
+      this.router.navigate(['/login']);
     }
   }
 

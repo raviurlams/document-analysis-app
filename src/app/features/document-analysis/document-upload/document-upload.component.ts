@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, effect } from '@angular/core';
+import { Component, ElementRef, ViewChild, computed } from '@angular/core';
 import { DocumentService } from '../../../services/document.service';
 import { LoadingService } from '../../../services/loading.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,21 +11,20 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class DocumentUploadComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
   selectedFile: File | null = null;
-  isLoading = false;
+  
+  // Use computed signal for loading state
+  isLoading = computed(() => this.loadingService.isLoading());
 
   constructor(
     private documentService: DocumentService,
     private loadingService: LoadingService,
     private snackBar: MatSnackBar
-  ) {
-    // Use effect to react to loading state changes
-    effect(() => {
-      this.isLoading = this.loadingService.isLoading();
-    });
-  }
+  ) {}
 
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
+    console.log('File selected:', file);
+    
     if (file && this.isValidFileType(file)) {
       this.selectedFile = file;
     } else {
@@ -37,21 +36,32 @@ export class DocumentUploadComponent {
   }
 
   uploadDocument(): void {
+    console.log('Upload button clicked');
+    
     if (this.selectedFile) {
+      console.log('Uploading file:', this.selectedFile.name);
+      
       this.documentService.uploadDocument(this.selectedFile).subscribe({
         next: (document) => {
-          this.selectedFile = null;
-          this.fileInput.nativeElement.value = '';
+          console.log('Upload successful:', document);
+          this.clearFileSelection();
           this.snackBar.open('Document uploaded successfully', 'Close', {
-            duration: 3000
+            duration: 3000,
+            panelClass: ['success-snackbar']
           });
         },
         error: (error) => {
           console.error('Upload failed', error);
           this.snackBar.open('Upload failed. Please try again.', 'Close', {
-            duration: 3000
+            duration: 3000,
+            panelClass: ['error-snackbar']
           });
         }
+      });
+    } else {
+      console.log('No file selected');
+      this.snackBar.open('Please select a file first', 'Close', {
+        duration: 3000
       });
     }
   }
@@ -60,12 +70,18 @@ export class DocumentUploadComponent {
     this.fileInput.nativeElement.click();
   }
 
-  isValidFileType(file: File): boolean {
-    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'text/plain'];
-    return allowedTypes.includes(file.type);
+  clearFileSelection(): void {
+    this.selectedFile = null;
+    this.fileInput.nativeElement.value = '';
   }
 
-  // File size formatter (instead of pipe)
+  isValidFileType(file: File): boolean {
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'text/plain'];
+    const isValid = allowedTypes.includes(file.type);
+    console.log('File type validation:', file.type, isValid);
+    return isValid;
+  }
+
   formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
     
